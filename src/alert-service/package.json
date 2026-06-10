@@ -1,0 +1,20 @@
+{
+  "name": "solar-shield-alert-service",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "express": "^4.18.3",
+    "ioredis": "^5.4.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}

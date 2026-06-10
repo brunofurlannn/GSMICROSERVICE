@@ -1,0 +1,1 @@
+Resultado esperado: k6 executando 10 VUs por 10s contra GET /api/alerts, com status 200. Gere o resultado final na sua maquina com: k6 run k6/smoke-test.js > k6/resultado.txt

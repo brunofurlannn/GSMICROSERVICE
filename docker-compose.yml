@@ -1,0 +1,61 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: solarshield-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: solarshield-redis
+    ports:
+      - "6379:6379"
+
+  ingestion-service:
+    build: ./src/ingestion-service
+    container_name: solarshield-ingestion
+    environment:
+      PORT: 3000
+      NASA_API_KEY: DEMO_KEY
+      NASA_BASE_URL: https://api.nasa.gov
+      RABBITMQ_URL: amqp://rabbitmq:5672
+      QUEUE_NAME: space.weather.events
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+
+  alert-service:
+    build: ./src/alert-service
+    container_name: solarshield-alert
+    environment:
+      PORT: 3001
+      RABBITMQ_URL: amqp://rabbitmq:5672
+      REDIS_URL: redis://redis:6379
+      QUEUE_NAME: space.weather.events
+      ALERTS_CACHE_TTL_SECONDS: 60
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - "3001:3001"
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: solarshield-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - ingestion-service
+      - alert-service
