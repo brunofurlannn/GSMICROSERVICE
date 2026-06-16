@@ -1,7 +1,7 @@
 function classifyKpRisk(kp) {
   const value = Number(kp);
   if (value <= 3) return { severity: 'low', emergencyNotification: false };
-  if (value >= 5 && value <= 7) return { severity: 'moderate', emergencyNotification: false };
+  if (value >= 4 && value <= 7) return { severity: 'moderate', emergencyNotification: false };
   return { severity: 'severe', emergencyNotification: true };
 }
 
